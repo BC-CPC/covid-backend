@@ -124,7 +124,7 @@ fun convertToCsv(excelFile: File, csvFile: File) {
                 else -> cell.stringCellValue.trim().replace("\n", "")
                         .split(" ")
                         .joinToString(" ") {
-                            it.toLowerCase().capitalize()
+                            it.capitalize()
                         }
             })
             rowBuilder.append(',')
