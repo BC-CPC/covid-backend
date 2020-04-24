@@ -92,7 +92,6 @@ fun fetchResourceData() {
     val excelFile = File("resource-data.xlsx")
 
     csvFile.delete()
-    excelFile.delete()
 
     convertToCsv(excelFile, csvFile)
 
