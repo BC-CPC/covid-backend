@@ -1,9 +1,6 @@
 package ca.bccpc.covid.data
 
-import com.google.gson.JsonElement
-import com.google.gson.JsonPrimitive
-import com.google.gson.JsonSerializationContext
-import com.google.gson.JsonSerializer
+import com.google.gson.*
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
@@ -29,7 +26,7 @@ enum class CriteriaType (
         get() = jsonName ?: name.toLowerCase()
 }
 
-class CriteriaAdapter: JsonAdapter<CriteriaType>(), JsonSerializer<CriteriaType> {
+class CriteriaAdapter: JsonAdapter<CriteriaType>(), JsonSerializer<CriteriaType>, JsonDeserializer<CriteriaType> {
     override fun fromJson(reader: JsonReader): CriteriaType? {
         val key = reader.nextString()
 
@@ -42,7 +39,15 @@ class CriteriaAdapter: JsonAdapter<CriteriaType>(), JsonSerializer<CriteriaType>
         writer.value(value?.jsonKey)
     }
 
-    override fun serialize(src: CriteriaType?, srcType: Type?, context: JsonSerializationContext?): JsonElement? {
-        return JsonPrimitive(src?.jsonKey)
+    override fun serialize(src: CriteriaType, srcType: Type?, context: JsonSerializationContext?): JsonElement? {
+        return JsonPrimitive(src.jsonKey)
+    }
+
+    override fun deserialize(json: JsonElement, typeOfT: Type?, context: JsonDeserializationContext?): CriteriaType? {
+        val key = json.asString
+
+        return CriteriaType.values().firstOrNull {
+            it.jsonKey.equals(key, true)
+        }
     }
 }

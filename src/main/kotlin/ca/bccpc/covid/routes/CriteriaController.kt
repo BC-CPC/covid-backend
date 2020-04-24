@@ -9,10 +9,9 @@ object CriteriaController {
     fun getAllCriteria(context: Context) {
         val optionsByType = CriteriaType.values()
                 .filter { it.display }
-                .associateBy (
-                        { it.name.toLowerCase() },
-                        { CriteriaData(it.column, ResourceSheet.findOptions(it)) }
-                )
+                .associateWith {
+                    CriteriaData(it.column, ResourceSheet.findOptions(it))
+                }
 
         context.json(optionsByType)
     }
