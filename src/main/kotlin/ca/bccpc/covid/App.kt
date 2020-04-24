@@ -94,7 +94,6 @@ fun fetchResourceData() {
     csvFile.delete()
     excelFile.delete()
 
-    downloadResourceExcel(excelFile)
     convertToCsv(excelFile, csvFile)
 
     ResourceSheet.source = DataFrame.readCSV(
@@ -127,7 +126,7 @@ fun convertToCsv(excelFile: File, csvFile: File) {
 
             rowBuilder.append(when (cell.cellType) {
                 CellType.NUMERIC -> cell.numericCellValue.toInt()
-                else -> cell.stringCellValue
+                else -> cell.stringCellValue.trim().replace("\n", "")
             })
             rowBuilder.append(',')
         }
@@ -138,26 +137,4 @@ fun convertToCsv(excelFile: File, csvFile: File) {
 
     output.flush()
     output.close()
-}
-
-fun downloadResourceExcel(file: File) {
-    val url = System.getenv("RESOURCE_URL")
-    val listener = InputStreamResponseListener()
-
-    val client = HttpClient(SslContextFactory()).apply {
-        isFollowRedirects = true
-    }
-
-    client.start()
-    client.newRequest(url).send(listener)
-
-    val response = listener.get(5, TimeUnit.SECONDS)
-
-    if (response.status != HttpStatus.OK_200) {
-        println("bruh moment")
-        return
-    }
-
-    Files.copy(listener.inputStream, file.toPath())
-    client.stop()
 }
