@@ -15,7 +15,7 @@ enum class CriteriaType (
         private val jsonName: String? = null
 ) {
     NAME(false),
-    PUBLISHER,
+    PUBLISHER(true, "Author"),
     DATE(false),
     LINK(false),
     AUDIENCE,
