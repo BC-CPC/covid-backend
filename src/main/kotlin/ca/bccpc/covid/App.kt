@@ -7,7 +7,6 @@ import ca.bccpc.covid.routes.CriteriaController
 import ca.bccpc.covid.routes.SearchController
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import io.javalin.Javalin
@@ -21,15 +20,10 @@ import krangl.readCSV
 import org.apache.commons.csv.CSVFormat
 import org.apache.poi.ss.usermodel.CellType
 import org.apache.poi.ss.usermodel.WorkbookFactory
-import org.eclipse.jetty.client.HttpClient
-import org.eclipse.jetty.client.util.InputStreamResponseListener
-import org.eclipse.jetty.http.HttpStatus
-import org.eclipse.jetty.util.ssl.SslContextFactory
 import java.io.File
 import java.io.FileOutputStream
 import java.lang.StringBuilder
 import java.lang.reflect.Modifier
-import java.nio.file.Files
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
@@ -39,16 +33,18 @@ fun main() {
             .port(System.getenv("SERVER_PORT")?.toIntOrNull() ?: 80)
             .enableCorsForAllOrigins()
             .start()
+    val criteriaAdapter = CriteriaAdapter()
 
     // JSON deserializer (includes validation)
     val moshi = Moshi.Builder()
-            .add(CriteriaType::class.java, CriteriaAdapter())
+            .add(CriteriaType::class.java, criteriaAdapter)
             .add(KotlinJsonAdapterFactory())
             .build()
 
     // JSON serializer
     val gson: Gson = GsonBuilder()
             .disableHtmlEscaping()
+            .registerTypeAdapter(CriteriaType::class.java, criteriaAdapter)
             .excludeFieldsWithModifiers(Modifier.TRANSIENT)
             .create()
 
