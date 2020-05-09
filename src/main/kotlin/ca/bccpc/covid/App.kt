@@ -109,7 +109,7 @@ fun convertToCsv(excelFile: File, csvFile: File) {
 
     for (i in 0..sheet.lastRowNum) {
         val rowBuilder = StringBuilder()
-        val row = sheet.getRow(i)
+        val row = sheet.getRow(i) ?: continue
 
         for (j in 0 until row.lastCellNum) {
             val cell = row.getCell(j)
@@ -121,11 +121,11 @@ fun convertToCsv(excelFile: File, csvFile: File) {
 
             rowBuilder.append(when (cell.cellType) {
                 CellType.NUMERIC -> cell.numericCellValue.toInt()
-                else -> cell.stringCellValue.trim().replace("\n", "")
-                        .split(" ")
-                        .joinToString(" ") {
+                else -> cell.stringCellValue?.trim()?.replace("\n", "")
+                        ?.split(" ")
+                        ?.joinToString(" ") {
                             it.capitalize()
-                        }
+                        } ?: ' '
             })
             rowBuilder.append(',')
         }
