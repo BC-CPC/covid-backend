@@ -105,11 +105,10 @@ fun convertToCsv(excelFile: File, csvFile: File) {
 
     val output = FileOutputStream(csvFile).writer()
     val workbook = WorkbookFactory.create(excelFile)
-    val sheet = workbook.getSheetAt(0)
+    val sheet = workbook.getSheetAt(workbook.activeSheetIndex)
 
-    for (i in 0..sheet.lastRowNum) {
+    for (row in sheet) {
         val rowBuilder = StringBuilder()
-        val row = sheet.getRow(i) ?: continue
 
         for (j in 0 until row.lastCellNum) {
             val cell = row.getCell(j)
