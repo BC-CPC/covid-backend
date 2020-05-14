@@ -120,11 +120,14 @@ fun convertToCsv(excelFile: File, csvFile: File) {
 
             rowBuilder.append(when (cell.cellType) {
                 CellType.NUMERIC -> cell.numericCellValue.toInt()
-                else -> cell.stringCellValue?.trim()?.replace("\n", "")
-                        ?.split(" ")
-                        ?.joinToString(" ") {
-                            it.capitalize()
-                        } ?: ' '
+                else -> "\"" + (
+                            cell.stringCellValue?.trim()
+                                    ?.replace("\n", "")
+                                    ?.split(" ")
+                                    ?.joinToString(" ") {
+                                        it.capitalize()
+                                    } ?: ' '
+                        ) + "\""
             })
             rowBuilder.append(',')
         }
