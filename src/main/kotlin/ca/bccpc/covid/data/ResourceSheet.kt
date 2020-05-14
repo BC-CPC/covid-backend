@@ -9,11 +9,15 @@ object ResourceSheet {
 
     fun findOptions(criteriaType: CriteriaType): List<String> {
         return source.rows
-                .map {
-                    it.findValue(criteriaType)
+                .flatMap {
+                    it.findValues(criteriaType)
                 }
                 .filter(String::isNotEmpty)
-                .distinct()
+                .distinctBy(String::toLowerCase)
+    }
+
+    private fun DataFrameRow.findValues(column: CriteriaType): List<String> {
+        return (this[column.column] as? String)?.split(";")?.map(String::trim) ?: emptyList()
     }
 
     private fun DataFrameRow.findValue(column: CriteriaType): String {
@@ -24,7 +28,9 @@ object ResourceSheet {
         val results = source.filterByRow {
             query.entries.all {
                 it.value.isEmpty() ||
-                        findValue(it.key).equals(it.value, ignoreCase = true)
+                        findValues(it.key).any { value ->
+                            value.equals(it.value, ignoreCase = true)
+                        }
             }
         }
 
